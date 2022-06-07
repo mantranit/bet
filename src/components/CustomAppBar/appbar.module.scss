@@ -1,7 +1,12 @@
-.menu-item-active {
+.mainMenu {
+  display: flex;
+  flex-grow: 1;
+}
+.mainMenuActive {
   font-weight: bold !important;
 }
-.menu-divider {
+
+.menuDivider {
   height: 68px;
   display: flex;
   justify-content: center;

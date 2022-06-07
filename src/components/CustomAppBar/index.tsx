@@ -5,7 +5,7 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import AdbIcon from "@mui/icons-material/Adb";
-import "./appbar.module.scss";
+import styles from "./appbar.module.scss";
 import { useApp } from "../../../shared/AppProvider";
 import Link from "../Link";
 
@@ -39,11 +39,11 @@ const CustomAppBar: React.FC<AppBarProps> = (props) => {
     <AppBar position="static">
       <Toolbar disableGutters>
         <AdbIcon sx={{ mx: 2 }} />
-        <Box sx={{ flexGrow: 1, display: "flex" }}>
+        <Box className={styles.mainMenu}>
           {pages.map((page, index) => (
             <React.Fragment key={page.label}>
               {index !== 0 && (
-                <div className="menu-divider">
+                <div className={styles.menuDivider}>
                   <span />
                 </div>
               )}
@@ -51,6 +51,7 @@ const CustomAppBar: React.FC<AppBarProps> = (props) => {
                 <Button
                   component={Link}
                   href={page.to}
+                  activeClassName={styles.mainMenuActive}
                   sx={{ my: 2, color: "white", display: "block" }}
                 >
                   {page.label}
@@ -73,6 +74,7 @@ const CustomAppBar: React.FC<AppBarProps> = (props) => {
           <Button
             component={Link}
             href="/about"
+            activeClassName={styles.mainMenuActive}
             sx={{ my: 2, color: "white", display: "block" }}
           >
             About

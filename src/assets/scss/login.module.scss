@@ -1,0 +1,19 @@
+.setting {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 69px);
+}
+.settingContent {
+  width: 375px;
+  &Row {
+    margin-bottom: 20px;
+  }
+}
+
+.facebookButton {
+  background: #3b5998 !important;
+}
+.googleButton {
+  background: #db3236 !important;
+}

@@ -30,7 +30,6 @@ const CustomAppBar: React.FC<AppBarProps> = (props) => {
           ]
         : [
             { label: "Login", to: "/login" },
-            { label: "Register", to: "/register" },
           ]),
     ],
   } = props;

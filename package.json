@@ -20,6 +20,7 @@
     "firebase": "^9.8.2",
     "formik": "^2.2.9",
     "next": "latest",
+    "nookies": "^2.5.2",
     "react": "latest",
     "react-dom": "latest",
     "sass": "^1.52.2",

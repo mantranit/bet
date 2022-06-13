@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import Toast from "../src/components/Toast";
 import Loading from "../src/components/Loading";
 import { AlertColor } from "@mui/material/Alert";
-import { FirebaseApp, initializeApp } from "firebase/app";
+import { initializeApp } from "firebase/app";
 import {
   getAuth,
   signInWithEmailAndPassword,
@@ -12,6 +12,11 @@ import {
   onAuthStateChanged,
   signOut,
 } from "firebase/auth";
+import { parseCookies, setCookie, destroyCookie } from "nookies";
+
+interface AppUser extends User {
+  accessToken: string;
+}
 
 interface AppProviderProps {
   children: React.ReactNode;
@@ -71,8 +76,14 @@ const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     if (auth) {
       onAuthStateChanged(auth, (user) => {
         if (user) {
+          const { accessToken = '' } = user as AppUser;
+          setCookie(null, "_access_token", accessToken, {
+            maxAge: 30 * 24 * 60 * 60, // 30 days
+            path: "/",
+          });
           setUser(user);
         } else {
+          destroyCookie(null, "_access_token");
           setUser(null);
         }
       });

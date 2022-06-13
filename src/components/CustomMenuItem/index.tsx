@@ -1,7 +1,5 @@
-import Button from "@mui/material/Button";
-import MenuItem from "@mui/material/MenuItem";
-import Typography from "@mui/material/Typography";
 import * as React from "react";
+import MenuItem from "@mui/material/MenuItem";
 import Link from "../Link";
 import styles from "./menuItem.module.scss";
 
@@ -17,15 +15,26 @@ interface MenuItemProps {
 
 const CustomMenuItem: React.FC<MenuItemProps> = (props) => {
   const { item, activeClassName, ...rest } = props;
+  const { label, to, click = () => {} } = item;
   return (
     <>
-      {item.to ? (
-        <MenuItem component={Link} activeClassName={activeClassName} href={item.to} {...rest}>
-          {item.label}
+      {to ? (
+        <MenuItem
+          component={Link}
+          activeClassName={activeClassName}
+          href={to}
+          {...rest}
+        >
+          {label}
         </MenuItem>
       ) : (
-        <MenuItem onClick={() => { item.click(); }} {...rest}>
-          {item.label}
+        <MenuItem
+          onClick={() => {
+            click();
+          }}
+          {...rest}
+        >
+          {label}
         </MenuItem>
       )}
     </>

@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import Toast from "../src/components/Toast";
 import Loading from "../src/components/Loading";
 import { AlertColor } from "@mui/material/Alert";
-import { initializeApp } from "firebase/app";
+import { FirebaseApp, initializeApp } from "firebase/app";
 import {
   getAuth,
   signInWithEmailAndPassword,
@@ -13,6 +13,7 @@ import {
   signOut,
 } from "firebase/auth";
 import { parseCookies, setCookie, destroyCookie } from "nookies";
+import { initFirebase } from "./firebase/initFirebase";
 
 interface AppUser extends User {
   accessToken: string;
@@ -45,6 +46,7 @@ const AppContext = React.createContext<AppContextProps>({
 
 const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   const [user, setUser] = React.useState<User | null>(null);
+  const [app, setApp] = React.useState<FirebaseApp | null>(null);
   const [auth, setAuth] = React.useState<Auth | null>(null);
   const [isLoading, setLoading] = React.useState<boolean>(false);
   const [isToast, setToast] = React.useState<boolean>(false);
@@ -54,21 +56,7 @@ const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   const [message, setMessage] = React.useState<React.ReactNode>("");
 
   useEffect(() => {
-    // TODO: Replace the following with your app's Firebase project configuration
-    // See: https://firebase.google.com/docs/web/learn-more#config-object
-    const firebaseConfig = {
-      apiKey: "AIzaSyA5Cu-9-DdJXFjuo8_1D4UoUXHfI9mzxq4",
-      authDomain: "worldcup2022-d24da.firebaseapp.com",
-      databaseURL:
-        "https://worldcup2022-d24da-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "worldcup2022-d24da",
-      storageBucket: "worldcup2022-d24da.appspot.com",
-      messagingSenderId: "265462252701",
-      appId: "1:265462252701:web:9273d1c822050c7637c074",
-      measurementId: "G-CSGGFWEJ2E",
-    };
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
+    const app: FirebaseApp = initFirebase();
     setAuth(getAuth(app));
   }, []);
 
@@ -76,7 +64,7 @@ const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     if (auth) {
       onAuthStateChanged(auth, (user) => {
         if (user) {
-          const { accessToken = '' } = user as AppUser;
+          const { accessToken = "" } = user as AppUser;
           setCookie(null, "_access_token", accessToken, {
             maxAge: 30 * 24 * 60 * 60, // 30 days
             path: "/",

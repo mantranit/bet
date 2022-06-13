@@ -1,11 +1,12 @@
 import * as React from "react";
-import type { NextPage } from "next";
+import type { NextPage, NextPageContext } from "next";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Link from "../src/components/Link";
 import Layout from "../src/components/Layout";
 import nookies from "nookies";
+import { verifyIdToken } from "../shared/firebase/firebaseAdmin";
 
 const AboutPage: NextPage = () => {
   return (
@@ -32,10 +33,19 @@ const AboutPage: NextPage = () => {
   );
 };
 
-export const getServerSideProps = (ctx: any) => {
+export const getServerSideProps = (ctx: NextPageContext) => {
   // Parse
   const cookies = nookies.get(ctx);
-  console.log(cookies)
+
+  verifyIdToken("cookies._access_token")
+    .then((token) => {
+      console.log(token);
+    })
+    .catch((error) => {
+      const { res } = ctx;
+      (res as any).statusCode = 302;
+      (res as any).setHeader("Location", `/login`);
+    });
 
   // Set
   // nookies.set(ctx, "fromGetInitialProps", "value", {

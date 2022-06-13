@@ -18,6 +18,7 @@
     "@mui/lab": "^5.0.0-alpha.84",
     "@mui/material": "latest",
     "firebase": "^9.8.2",
+    "firebase-admin": "^10.3.0",
     "formik": "^2.2.9",
     "next": "latest",
     "nookies": "^2.5.2",

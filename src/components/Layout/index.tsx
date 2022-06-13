@@ -1,5 +1,5 @@
 import React from "react";
-import AppBar from "../CustomAppBar";
+import CustomAppBar from "../CustomAppBar";
 import "./layout.module.scss";
 
 interface LayoutProps {
@@ -10,7 +10,7 @@ const Layout: React.FC<LayoutProps> = (props) => {
   const { children } = props;
   return (
     <>
-      <AppBar />
+      <CustomAppBar />
       <div className="App">
         <main className="App-main">{children}</main>
       </div>

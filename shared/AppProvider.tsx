@@ -2,11 +2,15 @@ import React, { useEffect } from "react";
 import Toast from "../src/components/Toast";
 import Loading from "../src/components/Loading";
 import { AlertColor } from "@mui/material/Alert";
-import { initializeApp } from "firebase/app";
+import { FirebaseApp, initializeApp } from "firebase/app";
 import {
   getAuth,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  User,
+  Auth,
+  onAuthStateChanged,
+  signOut,
 } from "firebase/auth";
 
 interface AppProviderProps {
@@ -14,8 +18,7 @@ interface AppProviderProps {
 }
 
 interface AppContextProps {
-  auth: string | null;
-  setAuth: React.Dispatch<React.SetStateAction<string | null>>;
+  user: User | null;
   showToast: (
     message: React.ReactNode,
     severity?: AlertColor | undefined
@@ -23,21 +26,21 @@ interface AppContextProps {
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   loginByEmail: (email: string, password: string) => void;
   signInByEmail: (email: string, password: string) => void;
+  logout: () => void;
 }
 
 const AppContext = React.createContext<AppContextProps>({
-  auth: null,
-  setAuth: () => {},
+  user: null,
   showToast: () => {},
   setLoading: () => {},
   loginByEmail: () => {},
   signInByEmail: () => {},
+  logout: () => {},
 });
 
 const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
-  const [auth, setAuth] = React.useState(
-    typeof window !== "undefined" ? localStorage.getItem("token") : null
-  );
+  const [user, setUser] = React.useState<User | null>(null);
+  const [auth, setAuth] = React.useState<Auth | null>(null);
   const [isLoading, setLoading] = React.useState<boolean>(false);
   const [isToast, setToast] = React.useState<boolean>(false);
   const [severity, setSeverity] = React.useState<AlertColor | undefined>(
@@ -61,7 +64,20 @@ const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     };
     // Initialize Firebase
     const app = initializeApp(firebaseConfig);
+    setAuth(getAuth(app));
   }, []);
+
+  useEffect(() => {
+    if (auth) {
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          setUser(user);
+        } else {
+          setUser(null);
+        }
+      });
+    }
+  }, [auth]);
 
   const showToast = (
     message: React.ReactNode,
@@ -72,63 +88,57 @@ const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     setSeverity(severity);
   };
 
-  const loginByEmail = (
-    email: string,
-    password: string,
-    callback?: (err: Error) => void
-  ) => {
+  const loginByEmail = (email: string, password: string) => {
     setLoading(true);
-    const auth = getAuth();
-
-    signInWithEmailAndPassword(auth, email, password)
+    signInWithEmailAndPassword(auth!, email, password)
       .then((userCredential) => {
-        // Signed in
-        const user = userCredential.user;
-        console.info(user);
-        // ...
-        setLoading(false);
+        const { user } = userCredential;
+        setUser(user);
       })
       .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.error(error);
+        showToast(error.message);
+      })
+      .finally(() => {
         setLoading(false);
       });
   };
 
-  const signInByEmail = (
-    email: string,
-    password: string,
-    callback?: (err: Error) => void
-  ) => {
+  const signInByEmail = (email: string, password: string) => {
     setLoading(true);
-    const auth = getAuth();
-
-    createUserWithEmailAndPassword(auth, email, password)
+    createUserWithEmailAndPassword(auth!, email, password)
       .then((userCredential) => {
-        // Signed in
-        const user = userCredential.user;
-        console.info(user);
-        // ...
-        setLoading(false);
-        // ...
+        const { user } = userCredential;
+        setUser(user);
       })
       .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        // ..
-        console.error(error);
+        showToast(error.message);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
+  const logout = () => {
+    setLoading(true);
+    signOut(auth!)
+      .then(() => {
+        setUser(null);
+      })
+      .catch((error) => {
+        showToast(error.message);
+      })
+      .finally(() => {
         setLoading(false);
       });
   };
 
   const value: AppContextProps = {
-    auth,
-    setAuth,
+    user,
     showToast,
     setLoading,
     loginByEmail,
     signInByEmail,
+    logout,
   };
 
   return (

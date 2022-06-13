@@ -19,7 +19,7 @@ const AboutPage: NextPage = () => {
         }}
       >
         <Typography variant="h4" component="h1" gutterBottom>
-          ABOUT
+          PROFILE
         </Typography>
         <Box maxWidth="sm">
           <Button variant="contained" component={Link} noLinkStyle href="/">

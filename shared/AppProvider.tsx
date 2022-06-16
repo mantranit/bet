@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import Toast from "../src/components/Toast";
 import Loading from "../src/components/Loading";
 import { AlertColor } from "@mui/material/Alert";
-import { FirebaseApp, initializeApp } from "firebase/app";
+import { FirebaseApp } from "firebase/app";
 import {
   getAuth,
   signInWithEmailAndPassword,
@@ -13,7 +13,8 @@ import {
   signOut,
 } from "firebase/auth";
 import { parseCookies, setCookie, destroyCookie } from "nookies";
-import { initFirebase } from "./firebase/initFirebase";
+import { initFirebase } from "./firebase";
+import { useRouter } from "next/router";
 
 interface AppUser extends User {
   accessToken: string;
@@ -46,7 +47,6 @@ const AppContext = React.createContext<AppContextProps>({
 
 const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   const [user, setUser] = React.useState<User | null>(null);
-  const [app, setApp] = React.useState<FirebaseApp | null>(null);
   const [auth, setAuth] = React.useState<Auth | null>(null);
   const [isLoading, setLoading] = React.useState<boolean>(false);
   const [isToast, setToast] = React.useState<boolean>(false);
@@ -54,6 +54,7 @@ const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     "error"
   );
   const [message, setMessage] = React.useState<React.ReactNode>("");
+  const router = useRouter();
 
   useEffect(() => {
     const app: FirebaseApp = initFirebase();
@@ -70,9 +71,11 @@ const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
             path: "/",
           });
           setUser(user);
+          router.push(`/`);
         } else {
           destroyCookie(null, "_access_token");
           setUser(null);
+          router.push(`${process.env.NEXT_PUBLIC_LOGIN_URL}`);
         }
       });
     }

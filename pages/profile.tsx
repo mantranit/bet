@@ -5,8 +5,7 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Link from "../src/components/Link";
 import Layout from "../src/components/Layout";
-import nookies from "nookies";
-import { verifyIdToken } from "../shared/firebase/firebaseAdmin";
+import useAuth from "../shared/useAuth";
 
 const AboutPage: NextPage = () => {
   return (
@@ -33,34 +32,11 @@ const AboutPage: NextPage = () => {
   );
 };
 
-export const getServerSideProps = (ctx: NextPageContext) => {
-  // Parse
-  const cookies = nookies.get(ctx);
-
-  verifyIdToken("cookies._access_token")
-    .then((token) => {
-      console.log(token);
-    })
-    .catch((error) => {
-      const { res } = ctx;
-      (res as any).statusCode = 302;
-      (res as any).setHeader("Location", `/login`);
-    });
-
-  // Set
-  // nookies.set(ctx, "fromGetInitialProps", "value", {
-  //   maxAge: 30 * 24 * 60 * 60,
-  //   path: "/",
-  // });
-
-  // Destroy
-  // nookies.destroy(ctx, 'cookieName')
-
+export const getServerSideProps = useAuth((ctx: NextPageContext) => {
   return {
     props: {
-      cookies,
     },
   };
-};
+});
 
 export default AboutPage;

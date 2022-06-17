@@ -1,8 +1,9 @@
 import * as React from 'react';
-import type { NextPage } from 'next';
+import type { NextPage, NextPageContext } from 'next';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Layout from '../src/components/Layout';
+import withAuth from '../shared/withAuth';
 
 const Homepage: NextPage = () => {
   return (
@@ -23,5 +24,12 @@ const Homepage: NextPage = () => {
     </Layout>
   );
 };
+
+export const getServerSideProps = withAuth((ctx: NextPageContext) => {
+  return {
+    props: {
+    },
+  };
+});
 
 export default Homepage;

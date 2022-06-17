@@ -13,7 +13,7 @@ import {
   signOut,
 } from "firebase/auth";
 import { parseCookies, setCookie, destroyCookie } from "nookies";
-import { initFirebase } from "./firebase";
+import { firebaseClient } from "./firebaseClient";
 import { useRouter } from "next/router";
 
 interface AppUser extends User {
@@ -57,13 +57,14 @@ const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   const router = useRouter();
 
   useEffect(() => {
-    const app: FirebaseApp = initFirebase();
+    const app: FirebaseApp = firebaseClient();
     setAuth(getAuth(app));
   }, []);
 
   useEffect(() => {
     if (auth) {
       onAuthStateChanged(auth, (user) => {
+        const loginUrl = `${process.env.NEXT_PUBLIC_LOGIN_URL}`;
         if (user) {
           const { accessToken = "" } = user as AppUser;
           setCookie(null, "_access_token", accessToken, {
@@ -71,11 +72,13 @@ const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
             path: "/",
           });
           setUser(user);
-          router.push(`/`);
+          if (router.pathname === loginUrl) {
+            router.push(`/`);
+          }
         } else {
           destroyCookie(null, "_access_token");
           setUser(null);
-          router.push(`${process.env.NEXT_PUBLIC_LOGIN_URL}`);
+          router.push(loginUrl);
         }
       });
     }

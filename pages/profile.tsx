@@ -5,7 +5,7 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Link from "../src/components/Link";
 import Layout from "../src/components/Layout";
-import useAuth from "../shared/useAuth";
+import withAuth from "../shared/withAuth";
 
 const AboutPage: NextPage = () => {
   return (
@@ -32,7 +32,7 @@ const AboutPage: NextPage = () => {
   );
 };
 
-export const getServerSideProps = useAuth((ctx: NextPageContext) => {
+export const getServerSideProps = withAuth((ctx: NextPageContext) => {
   return {
     props: {
     },
